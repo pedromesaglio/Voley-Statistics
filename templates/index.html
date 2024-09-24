@@ -34,12 +34,86 @@
             background-color: #343a40;
             color: #fff;
         }
+        .volleyball-court {
+            position: fixed;
+            float: right;
+            margin-top:40px;
+            bottom: 20px;  /* Ubica la cancha en la parte inferior */
+            right: 20px;   /* Ubica la cancha a la derecha */
+            width: 300px;  /* Ancho de la cancha */
+            height: 450px; /* Altura de la cancha */
+            background-color: #e0e0e0; /* Color de fondo de la cancha */
+            border: 3px solid #000;  /* Borde negro de la cancha */
+            border-radius: 10px;     /* Bordes redondeados */
+            position: relative;      /* Posicionamiento relativo para las líneas */
+        }
+        
+        /* Red de la cancha */
+        .net-line {
+            position: absolute;
+            top: 50%; /* Coloca la red en el centro verticalmente */
+            width: 100%;
+            height: 3px;
+            background-color: #000;
+        }
+        
+        /* Línea de tres metros */
+        .three-meter-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: #000;
+            top: 25%; /* Coloca la línea de tres metros */
+        }
+        
+        /* Jugadores */
+        .player-position {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            position: absolute;
+            font-weight: bold;
+        }
+        
+        /* Posicionamiento de los jugadores en la cancha */
+        
+        /* Línea defensiva (posiciones traseras) */
+        .pos1 { bottom: 20px; left: calc(50% + 70px); } /* Jugador 1: derecha defensa */
+        .pos6 { bottom: 20px; left: calc(50% - 25px); } /* Jugador 6: centro defensa */
+        .pos5 { bottom: 20px; left: calc(50% - 120px); } /* Jugador 5: izquierda defensa */
+        
+        /* Línea ofensiva (posiciones delanteras) */
+        .pos2 { top: 20px; left: calc(50% + 70px); }  /* Jugador 2: derecha ataque */
+        .pos3 { top: 20px; left: calc(50% - 25px); }  /* Jugador 3: centro ataque */
+        .pos4 { top: 20px; left: calc(50% - 120px); } /* Jugador 4: izquierda ataque */ }
     </style>
 </head>
 <body>
 
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Estadísticas de Voleibol</a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Mi Perfil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <h1>Estadísticas de Voleibol</h1>
+
         <form method="POST">
             <div class="table-responsive">
                 <table class="table table-striped table-hover text-center">
@@ -50,23 +124,58 @@
                             <th>Bloqueos</th>
                             <th>Servicios</th>
                             <th>Errores</th>
+                            <th>Errores no forzados</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for i in range(tables.shape[0]) %}
                         <tr>
-                            <td>{{ tables.Jugador[i] }}</td>
+                            <td><input type="text" class="form-control" name="jugador_{{ i }}" value="{{ tables.Jugador[i] }}"></td>
                             <td><input type="number" class="form-control" name="puntos_{{ i }}" value="{{ tables.Puntos[i] }}"></td>
                             <td><input type="number" class="form-control" name="bloqueos_{{ i }}" value="{{ tables.Bloqueos[i] }}"></td>
                             <td><input type="number" class="form-control" name="servicios_{{ i }}" value="{{ tables.Servicios[i] }}"></td>
                             <td><input type="number" class="form-control" name="errores_{{ i }}" value="{{ tables.Errores[i] }}"></td>
+                            <td><input type="number" class="form-control" name="errores_no_forzados_{{ i }}" value="{{ tables['Errores no forzados'][i] }}"></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+
+            <!-- Agregar nuevo jugador -->
+            <div class="form-group mt-4">
+                <label for="new_player">Agregar nuevo jugador:</label>
+                <input type="text" class="form-control" id="new_player" name="new_player" placeholder="Nombre del jugador">
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Guardar cambios</button>
+
+            <!-- Jugadores en la cancha -->
+            <div class="volleyball-court">
+                <!-- Red en el centro de la cancha -->
+                <div class="net-line"></div>
+                
+                <!-- Línea de tres metros -->
+                <div class="three-meter-line"></div>
+                
+                <!-- Posiciones de los jugadores en la cancha -->
+                <div class="player-position pos1">
+                    <input type="text" class="form-control" name="player_pos_1" value="{{ court_players[0] }}" placeholder="P1">
+                </div>
+                <div class="player-position pos2">
+                    <input type="text" class="form-control" name="player_pos_2" value="{{ court_players[1] }}" placeholder="P2">
+                </div>
+                <div class="player-position pos3">
+                    <input type="text" class="form-control" name="player_pos_3" value="{{ court_players[2] }}" placeholder="P3">
+                </div>
+                <div class="player-position pos4">
+                    <input type="text" class="form-control" name="player_pos_4" value="{{ court_players[3] }}" placeholder="P4">
+                </div>
+                <div class="player-position pos5">
+                    <input type="text" class="form-control" name="player_pos_5" value="{{ court_players[4] }}" placeholder="P5">
+                </div>
+                <div class="player-position pos6">
+                    <input type="text" class="form-control" name="player_pos_6" value="{{ court_players[5] }}" placeholder="P6">
+                </div>
             </div>
         </form>
     </div>
